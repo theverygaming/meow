@@ -1,55 +1,43 @@
-with import (fetchTarball https://github.com/NixOS/nixpkgs/archive/2768c7d042a37de65bb1b5b3268fc987e534c49d.tar.gz) { };
+# TODO: switch to flake
+# from https://nixos.wiki/wiki/Rust - MIT - Copyright (c) 2017 Jörg Thalheim
+{ pkgs ? import <nixpkgs> { } }:
 let
-  sillyORMPackage = pkgs.python312Packages.buildPythonPackage rec {
-    pname = "sillyorm";
-    version = "dev"; # TODO: release
-    pyproject = true;
-
-    nativeBuildInputs = [
-      python312Packages.setuptools
-    ];
-
-    src = fetchFromGitHub {
-      owner = "theverygaming";
-      repo = "sillyORM";
-      rev = "dev";
-      hash = "sha256-huxVwYQ8ZoqLCGIiqvq5Z8vUXaxRFU4V+R+UNsioZf0=";
-    };
-  };
-in
-stdenv.mkDerivation {
-  name = "meow";
-  buildInputs = [
-    python312
-
-    sillyORMPackage
-
-    # lint, fmt, type, docs
-    python312Packages.pylint
-    python312Packages.mypy
-    python312Packages.black
-    sphinx
-    gnumake
-
-    # test
-    python312Packages.coverage
-    python312Packages.pytest
-
-    # build
-    python312Packages.build
-
-    # deps
-    python312Packages.fastapi
-
-    # postgres
-    python312Packages.psycopg2
-    python312Packages.types-psycopg2
-    postgresql_16
-
-    # for convenience
-    sqlitebrowser
-
-    # for dev server
-    python312Packages.uvicorn
+  overrides = (builtins.fromTOML (builtins.readFile ./rust-toolchain.toml));
+  libPath = with pkgs; lib.makeLibraryPath [
+    # load external libraries that you need in your rust project here
   ];
+in
+pkgs.mkShell rec {
+  buildInputs = with pkgs; [
+    clang
+    # Replace llvmPackages with llvmPackages_X, where X is the latest LLVM version (at the time of writing, 16)
+    llvmPackages.bintools
+    rustup
+    diesel-cli
+  ];
+  RUSTC_VERSION = overrides.toolchain.channel;
+  # https://github.com/rust-lang/rust-bindgen#environment-variables
+  LIBCLANG_PATH = pkgs.lib.makeLibraryPath [ pkgs.llvmPackages_latest.libclang.lib ];
+  shellHook = ''
+    export PATH=$PATH:''${CARGO_HOME:-~/.cargo}/bin
+    export PATH=$PATH:''${RUSTUP_HOME:-~/.rustup}/toolchains/$RUSTC_VERSION-x86_64-unknown-linux-gnu/bin/
+  '';
+  # Add precompiled library to rustc search path
+  RUSTFLAGS = (builtins.map (a: ''-L ${a}/lib'') [
+    # add libraries here (e.g. pkgs.libvmi)
+  ]);
+  LD_LIBRARY_PATH = libPath;
+  # Add glibc, clang, glib, and other headers to bindgen search path
+  BINDGEN_EXTRA_CLANG_ARGS =
+    # Includes normal include path
+    (builtins.map (a: ''-I"${a}/include"'') [
+      # add dev libraries here (e.g. pkgs.libvmi.dev)
+      pkgs.glibc.dev
+    ])
+    # Includes with special directory paths
+    ++ [
+      ''-I"${pkgs.llvmPackages_latest.libclang.lib}/lib/clang/${pkgs.llvmPackages_latest.libclang.version}/include"''
+      ''-I"${pkgs.glib.dev}/include/glib-2.0"''
+      ''-I${pkgs.glib.out}/lib/glib-2.0/include/''
+    ];
 }
