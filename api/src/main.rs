@@ -5,8 +5,8 @@ use diesel::associations::HasTable;
 
 use diesel::prelude::*;
 
-#[rocket::get("/")]
-async fn index(conn: DbConnection) -> Value {
+#[rocket::get("/?<page>&<pagesize>")]
+async fn index(conn: DbConnection, page: i64, pagesize: i64) -> Value {
     use diesel::dsl::count_star;
     use api::db::schema::brainlog_entry_type::dsl::*;
 
@@ -17,10 +17,10 @@ async fn index(conn: DbConnection) -> Value {
         .expect("Issue")
     }).await;
 
-    let items = conn.run(|c|{
+    let items = conn.run(move |c|{
         brainlog_entry_type
-        .limit(5)
-        .offset(0)
+        .limit(pagesize)
+        .offset(page * pagesize)
         .select(BrainlogEntryType::as_select())
         .load(c)
         .expect("Issue")
