@@ -8,7 +8,7 @@ use diesel::prelude::*;
 #[rocket::get("/")]
 async fn index(conn: DbConnection) -> Json<Vec<BrainlogEntryType>> {
     use api::db::schema::brainlog_entry_type::dsl::*;
-    let types = conn.run(move |c| brainlog_entry_type
+    let types = conn.run(|c| brainlog_entry_type
         .filter(name.eq("a"))
         .limit(5)
         .select(BrainlogEntryType::as_select())
@@ -20,15 +20,13 @@ async fn index(conn: DbConnection) -> Json<Vec<BrainlogEntryType>> {
 #[rocket::get("/create")]
 async fn create(conn: DbConnection) -> Json<BrainlogEntryType> {
     use api::db::schema::brainlog_entry_type;
-    
-    let new = NewBrainlogEntryType { name: "x", description: "y" };
-    // FIXME: this somehow doesn't fucking work????
-    let entry = conn.run(move |c| 
+
+    let entry = conn.run(|c|{
         diesel::insert_into(brainlog_entry_type::table)
-        .values(&new)
+        .values(&NewBrainlogEntryType { name: "x", description: "y" })
         .returning(BrainlogEntryType::as_returning())
         .get_result(c)
-        .expect("Error creating")).await;
+    }).await.expect("Error creating");
 
     Json(entry)
 }
