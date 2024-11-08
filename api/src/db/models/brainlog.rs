@@ -1,6 +1,6 @@
 use diesel::prelude::*;
 use crate::db::schema::{brainlog_entry_type, brainlog_entry};
-use serde::{Serialize};
+use serde::{Serialize, Deserialize};
 
 
 #[derive(Queryable, Selectable, Serialize)]
@@ -12,7 +12,7 @@ pub struct BrainlogEntryType {
     pub description: String,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Deserialize)]
 #[diesel(table_name = brainlog_entry_type)]
 pub struct NewBrainlogEntryType<'a> {
     pub name: &'a str,
