@@ -12,11 +12,11 @@ pub struct BrainlogEntryType {
     pub description: String,
 }
 
-#[derive(Insertable, Deserialize)]
+#[derive(Insertable, Deserialize, AsChangeset)]
 #[diesel(table_name = brainlog_entry_type)]
-pub struct NewBrainlogEntryType<'a> {
-    pub name: &'a str,
-    pub description: &'a str,
+pub struct NewBrainlogEntryType {
+    pub name: String,
+    pub description: String,
 }
 
 #[derive(Queryable, Selectable, Associations)]

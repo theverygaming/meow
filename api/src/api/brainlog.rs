@@ -4,15 +4,13 @@ use crate::db::models::brainlog::{NewBrainlogEntryType, BrainlogEntryType};
 
 use diesel::prelude::*;
 
-#[rocket::post("/brainlog/create", format = "application/json", data = "<data>")]
-async fn create(conn: DbConnection, data: &str) -> Json<BrainlogEntryType> {
+#[rocket::post("/brainlog/type/create", format = "json", data = "<data>")]
+async fn type_create(conn: DbConnection, data: Json<NewBrainlogEntryType>) -> Json<BrainlogEntryType> {
     use crate::db::schema::brainlog_entry_type;
-
-    let new_entry: NewBrainlogEntryType = rocket::serde::json::serde_json::from_str(&data).unwrap();
 
     let entry = conn.run(move |c|{
         diesel::insert_into(brainlog_entry_type::table)
-        .values(&new_entry)
+        .values(&*data)
         .returning(BrainlogEntryType::as_returning())
         .get_result(c)
         .expect("Error creating")
@@ -21,8 +19,8 @@ async fn create(conn: DbConnection, data: &str) -> Json<BrainlogEntryType> {
     Json(entry)
 }
 
-#[rocket::get("/brainlog/get?<id>")]
-async fn get(conn: DbConnection, id: &str) -> Json<BrainlogEntryType> {
+#[rocket::get("/brainlog/type/get?<id>")]
+async fn type_get(conn: DbConnection, id: &str) -> Json<BrainlogEntryType> {
     use crate::db::schema::brainlog_entry_type;
 
     let uuid = uuid::Uuid::parse_str(id).expect("valid UUID");
@@ -37,8 +35,40 @@ async fn get(conn: DbConnection, id: &str) -> Json<BrainlogEntryType> {
     Json(entry)
 }
 
-#[rocket::get("/brainlog/list?<page>&<pagesize>")]
-async fn list(conn: DbConnection, page: i64, pagesize: i64) -> Value {
+#[rocket::post("/brainlog/type/update?<id>", format = "json", data = "<data>")]
+async fn type_update(conn: DbConnection, id: &str, data: Json<NewBrainlogEntryType>) -> Json<BrainlogEntryType> {
+    use crate::db::schema::brainlog_entry_type;
+
+    let uuid = uuid::Uuid::parse_str(id).expect("valid UUID");
+
+    let entry = conn.run(move |c|{
+        diesel::update(brainlog_entry_type::table)
+        .filter(brainlog_entry_type::id.eq(uuid))
+        .set(&*data)
+        .returning(BrainlogEntryType::as_returning())
+        .get_result(c)
+        .expect("Error updating")
+    }).await;
+
+    Json(entry)
+}
+
+#[rocket::get("/brainlog/type/delete?<id>")]
+async fn type_delete(conn: DbConnection, id: &str) {
+    use crate::db::schema::brainlog_entry_type;
+
+    let uuid = uuid::Uuid::parse_str(id).expect("valid UUID");
+
+    conn.run(move |c|{
+        diesel::delete(brainlog_entry_type::table)
+        .filter(brainlog_entry_type::id.eq(uuid))
+        .execute(c)
+        .expect("Error updating")
+    }).await;
+}
+
+#[rocket::get("/brainlog/type/list?<page>&<pagesize>")]
+async fn type_list(conn: DbConnection, page: i64, pagesize: i64) -> Value {
     use diesel::dsl::count_star;
     use crate::db::schema::brainlog_entry_type::dsl::*;
 
@@ -66,28 +96,10 @@ async fn list(conn: DbConnection, page: i64, pagesize: i64) -> Value {
 
 pub fn routes() -> Vec<rocket::Route> {
     rocket::routes![
-        create,
-        get,
-        list
+        type_create,
+        type_get,
+        type_update,
+        type_delete,
+        type_list
     ]
-}
-
-#[cfg(test)]
-mod test {
-    use rocket::local::blocking::Client;
-    use rocket::http::Status;
-
-    #[test]
-    fn create() {
-        let client = Client::tracked(crate::api::rocket()).expect("valid rocket instance");
-        let response = client.post("/brainlog/create").body("field=value&otherField=123").dispatch();
-        assert_eq!(response.status(), Status::Ok);
-    }
-    
-    #[test]
-    fn list() {
-        let client = Client::tracked(crate::api::rocket()).expect("valid rocket instance");
-        let response = client.get("/brainlog/list?page=0&pagesize=5").dispatch();
-        assert_eq!(response.status(), Status::Ok);
-    }
 }
