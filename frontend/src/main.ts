@@ -8,6 +8,8 @@ import * as directives from 'vuetify/directives'
 import { md3 } from 'vuetify/blueprints'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 
+import router from './router'
+
 import App from './App.vue'
 
 const vuetify = createVuetify({
@@ -23,4 +25,4 @@ const vuetify = createVuetify({
   },
 })
 
-createApp(App).use(vuetify).mount('#app')
+createApp(App).use(vuetify).use(router).mount('#app')
