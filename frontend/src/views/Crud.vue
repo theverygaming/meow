@@ -8,10 +8,10 @@ interface FieldDefinition {
 };
 
 const props = defineProps<{
-  do_create: (values: object) => void;
+  do_create: (values: object) =>  Promise<void>;
   do_read: (page: number, items_per_page: number) => Promise<object[]>;
-  do_update: (id: string, values: object) => void;
-  do_delete: (id: string) => void;
+  do_update: (id: string, values: object) =>  Promise<void>;
+  do_delete: (id: string) =>  Promise<void>;
   fields: FieldDefinition[];
 }>();
 
@@ -33,13 +33,18 @@ const search = ref('');
 const serverItems = ref([]);
 const totalItems = ref(0);
 const loading = ref(true);
+const prevPage = ref(1);
+const previtemsPerPage = ref(1);
 function loadItems ({ page, itemsPerPage, sortBy }) {
+    console.log(`loadItems ${page}, ${itemsPerPage}`)
     loading.value = true;
     props.do_read(page, itemsPerPage).then(({ items, total_items }) => {
         serverItems.value = items;
         totalItems.value = total_items;
         loading.value = false;
     });
+    prevPage.value = page;
+    previtemsPerPage.value = itemsPerPage;
 }
 
 // https://github.com/vuetifyjs/vuetify/blob/master/packages/docs/src/examples/v-data-table/misc-crud.vue
@@ -71,9 +76,13 @@ function close () {
 
 function save () {
     if (editedId.value != -1) {
-        props.do_update(editedId.value, editedItem.value);
+        props.do_update(editedId.value, editedItem.value).then(() => {
+          loadItems({page: prevPage.value, itemsPerPage: previtemsPerPage.value, sortBy: ""})
+        });
     } else {
-        props.do_create(editedItem.value);
+        props.do_create(editedItem.value).then(() => {
+          loadItems({page: prevPage.value, itemsPerPage: previtemsPerPage.value, sortBy: ""})
+        });
     }
     close();
 }
@@ -93,7 +102,9 @@ function deleteItem (item) {
 }
 
 function deleteItemConfirm () {
-    props.do_delete(editedId.value);
+    props.do_delete(editedId.value).then(() => {
+      loadItems({page: prevPage.value, itemsPerPage: previtemsPerPage.value, sortBy: ""})
+    });
     closeDelete();
 }
 

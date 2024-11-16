@@ -11,19 +11,19 @@ const fields = [
   {"displayName": "Time", "key": "time"},
 ];
 
-function do_create(values) {
-  createLog(values);
+async function do_create(values) {
+  await createLog(values);
 }
 
 async function do_read(page: number, items_per_page: number) {
   return await getLogsList(page, items_per_page);
 }
 
-function do_update(id: string, values) {
+async function do_update(id: string, values) {
   console.log(`update ${id}`, values);
 }
 
-function do_delete(id: string) {
+async function do_delete(id: string) {
   console.log(`delete ${id}`);
 }
 
