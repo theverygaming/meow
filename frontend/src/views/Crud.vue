@@ -4,7 +4,7 @@ import { ref, nextTick, computed } from 'vue';
 interface FieldDefinition {
   displayName: string;
   key: string;
-  // TODO: type
+  type: string;
 };
 
 const props = defineProps<{
@@ -152,6 +152,11 @@ function closeDelete () {
                       v-model="editedItem[field.key]"
                       :label="field.displayName"
                     ></v-text-field>
+                    <component 
+                      is="v-date-picker"
+                      v-model="editedItem[field.key]"
+                      :label="field.displayName"
+                    ></component>
                   </v-col>
                 </v-row>
               </v-container>
