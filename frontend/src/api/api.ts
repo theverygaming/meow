@@ -7,10 +7,13 @@ export async function getData(route: string): Promise<Object> {
     if (!response.ok) {
         throw new Error(`Failure! Response status: ${response.status}`);
     }
-
-    const json = await response.json();
-    console.log(json);
-    return json;
+    try {
+        const json = await response.json();
+        console.log(json);
+        return json;
+    } catch {
+        return {};
+    }
 }
 
 export async function postData(route: string, data: Object): Promise<Object> {

@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 import Crud from './Crud.vue';
 
-import { getLogsList, createLog } from '../api/brainlog';
+import { getLogsList, createLog, updateLog, deleteLog } from '../api/brainlog';
 
 const fields = [
   {"displayName": "Text", "key": "body"},
@@ -20,11 +20,11 @@ async function do_read(page: number, items_per_page: number) {
 }
 
 async function do_update(id: string, values) {
-  console.log(`update ${id}`, values);
+  await updateLog(id, values);
 }
 
 async function do_delete(id: string) {
-  console.log(`delete ${id}`);
+  await deleteLog(id);
 }
 
 </script>
