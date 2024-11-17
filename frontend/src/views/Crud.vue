@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, nextTick, computed } from 'vue';
 
+import ISODateTimePicker from '../components/ISODateTimePicker.vue';
+
 interface FieldDefinition {
   displayName: string;
   key: string;
@@ -152,11 +154,11 @@ function closeDelete () {
                       v-model="editedItem[field.key]"
                       :label="field.displayName"
                     ></v-text-field>
-                    <component 
-                      is="v-date-picker"
+                    
+                    <ISODateTimePicker
                       v-model="editedItem[field.key]"
                       :label="field.displayName"
-                    ></component>
+                    ></ISODateTimePicker>
                   </v-col>
                 </v-row>
               </v-container>
