@@ -22,12 +22,12 @@ const props = defineProps<{
 const itemsPerPage = ref(5);
 const headers = computed(() => {
   let x = [];
-  for (const field of props.fields) {
+  for (const [i, field] of props.fields.entries()) {
     x.push({
       title: field.displayName,
       key: field.key,
       sortable: false,
-      align: "start", // TODO: start only the first one, others end
+      align: i == 0 ? "start" : "end",
     });
   }
   x.push({ title: 'Actions', key: 'actions', align: 'end' });
