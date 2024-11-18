@@ -69,6 +69,7 @@ async fn log_delete(conn: DbConnection, id: &str) {
 
 #[rocket::get("/brainlog/list?<page>&<pagesize>")]
 async fn log_list(conn: DbConnection, page: i64, mut pagesize: i64) -> Value {
+    use crate::db::schema::brainlog_entry;
     use diesel::dsl::count_star;
     use crate::db::schema::brainlog_entry::dsl::*;
 
@@ -88,6 +89,7 @@ async fn log_list(conn: DbConnection, page: i64, mut pagesize: i64) -> Value {
         .limit(pagesize)
         .offset(page * pagesize)
         .select(BrainlogEntry::as_select())
+        .order_by(brainlog_entry::time.desc())
         .load(c)
         .expect("Issue")
     }).await;
