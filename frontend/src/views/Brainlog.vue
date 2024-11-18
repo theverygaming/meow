@@ -5,11 +5,37 @@ import Crud from './Crud.vue';
 
 import { getLogsList, createLog, updateLog, deleteLog } from '../api/brainlog';
 
-const fields = [
-  {"displayName": "Text", "key": "body"},
-  {"displayName": "Type", "key": "log_type"},
-  {"displayName": "Time", "key": "time"},
-];
+const fields = ref([
+  {
+    "displayName": "Text",
+    "key": "body",
+    "type": "text",
+  },
+  {
+    "displayName": "Type",
+    "key": "log_type",
+    "type": "select",
+    "attrs": {
+      "items": [
+        // from Arya's poc_4 script :3
+        "achievement",
+        "problem",
+        "thought",
+        "decision",
+        "task",
+        "question",
+        "feeling",
+        "health",
+        "observation",
+      ],
+    },
+  },
+  {
+    "displayName": "Time",
+    "key": "time",
+    "type": "isodatetime",
+  },
+]);
 
 async function do_create(values) {
   await createLog(values);

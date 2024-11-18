@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Ref } from 'vue';
 import { ref, nextTick, computed } from 'vue';
 
 import ISODateTimePicker from '../components/ISODateTimePicker.vue';
@@ -7,6 +8,7 @@ interface FieldDefinition {
   displayName: string;
   key: string;
   type: string;
+  attrs?: object;
 };
 
 const props = defineProps<{
@@ -150,15 +152,22 @@ function closeDelete () {
               <v-container>
                 <v-row v-for="field in props.fields">
                   <v-col>
-                    <v-text-field
-                      v-model="editedItem[field.key]"
+                    <v-text-field 
+                      v-if="field.type == 'text'"
                       :label="field.displayName"
+                      v-model="editedItem[field.key]"
                     ></v-text-field>
-                    
                     <ISODateTimePicker
-                      v-model="editedItem[field.key]"
+                      v-if="field.type == 'isodatetime'"
                       :label="field.displayName"
+                      v-model="editedItem[field.key]"
                     ></ISODateTimePicker>
+                    <v-select
+                      v-if="field.type == 'select'"
+                      :label="field.displayName"
+                      :items="field.attrs.items"
+                      v-model="editedItem[field.key]"
+                    ></v-select>
                   </v-col>
                 </v-row>
               </v-container>
