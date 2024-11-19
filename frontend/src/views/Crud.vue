@@ -1,24 +1,30 @@
-<script setup lang="ts">
-import type { Ref } from 'vue';
+<script setup>
+// vue.js TS does not support generics in props and tbh i just fucking gave up on using TS here
+//import type { Ref } from 'vue';
 import { ref, nextTick, computed } from 'vue';
 
 import ISODateTimePicker from '../components/ISODateTimePicker.vue';
 
-interface FieldDefinition {
+/*interface FieldDefinition {
   displayName: string;
   key: string;
   type: string;
   attrs?: object;
 };
 
-const props = defineProps<{
-  title: string;
-  do_create: (values: object) =>  Promise<void>;
-  do_read: (page: number, items_per_page: number) => Promise<object[]>;
-  do_update: (id: string, values: object) =>  Promise<void>;
-  do_delete: (id: string) =>  Promise<void>;
-  fields: FieldDefinition[];
-}>();
+interface CrudOperations<T extends object = object, T2 extends T = T> {
+  do_create: (values: T) => Promise<void>;
+  do_read: (page: number, items_per_page: number) => Promise<T2[]>;
+  do_update: (id: string, values: T) => Promise<void>;
+  do_delete: (id: string) => Promise<void>;
+};
+*/
+
+const props = defineProps({
+  title: String,
+  operations: Object,
+  fields: Array,
+});
 
 const itemsPerPage = ref(5);
 const headers = computed(() => {
@@ -48,7 +54,7 @@ const previtemsPerPage = ref(1);
 function loadItems ({ page, itemsPerPage, sortBy }) {
     console.log(`loadItems ${page}, ${itemsPerPage}`)
     loading.value = true;
-    props.do_read(page, itemsPerPage).then(({ items, total_items }) => {
+    props.operations.do_read(page, itemsPerPage).then(({ items, total_items }) => {
         serverItems.value = items;
         totalItems.value = total_items;
         loading.value = false;
@@ -86,11 +92,11 @@ function close () {
 
 function save () {
     if (editedId.value != -1) {
-        props.do_update(editedId.value, editedItem.value).then(() => {
+        props.operations.do_update(editedId.value, editedItem.value).then(() => {
           loadItems({page: prevPage.value, itemsPerPage: previtemsPerPage.value, sortBy: ""})
         });
     } else {
-        props.do_create(editedItem.value).then(() => {
+        props.operations.do_create(editedItem.value).then(() => {
           loadItems({page: prevPage.value, itemsPerPage: previtemsPerPage.value, sortBy: ""})
         });
     }
@@ -112,7 +118,7 @@ function deleteItem (item) {
 }
 
 function deleteItemConfirm () {
-    props.do_delete(editedId.value).then(() => {
+    props.operations.do_delete(editedId.value).then(() => {
       loadItems({page: prevPage.value, itemsPerPage: previtemsPerPage.value, sortBy: ""})
     });
     closeDelete();

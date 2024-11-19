@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, watchEffect } from 'vue';
+import type { PropType } from 'vue';
 
-const model = defineModel();
+const model = defineModel({
+  type: String as PropType<string>,
+  required: true,
+});
 
 const props = defineProps<{
   label: string;

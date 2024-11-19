@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+// @ts-ignore
 import Crud from './Crud.vue';
 
 import { getLogsList, createLog, updateLog, deleteLog } from '../api/brainlog';
+import type { BrainlogObj, BrainlogObjId } from '../api/brainlog';
 
 const fields = ref([
   {
@@ -37,31 +39,27 @@ const fields = ref([
   },
 ]);
 
-async function do_create(values) {
-  await createLog(values);
-}
-
-async function do_read(page: number, items_per_page: number) {
-  return await getLogsList(page, items_per_page);
-}
-
-async function do_update(id: string, values) {
-  await updateLog(id, values);
-}
-
-async function do_delete(id: string) {
-  await deleteLog(id);
-}
+const operations = {
+  do_create: async (values: BrainlogObj) => {
+    await createLog(values);
+  },
+  do_read: async (page: number, items_per_page: number): Promise<BrainlogObjId[]> => {
+    return await getLogsList(page, items_per_page);
+  },
+  do_update: async (id: string, values: BrainlogObj) => {
+    await updateLog(id, values);
+  },
+  do_delete: async (id: string) => {
+    await deleteLog(id);
+  },
+};
 
 </script>
 
 <template>
   <Crud
     title="brainlog"
-    :do_create="do_create"
-    :do_read="do_read"
-    :do_update="do_update"
-    :do_delete="do_delete"
+    :operations="operations"
     :fields="fields"
   ></Crud>
 </template>
