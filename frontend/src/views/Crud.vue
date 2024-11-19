@@ -12,6 +12,7 @@ interface FieldDefinition {
 };
 
 const props = defineProps<{
+  title: string;
   do_create: (values: object) =>  Promise<void>;
   do_read: (page: number, items_per_page: number) => Promise<object[]>;
   do_update: (id: string, values: object) =>  Promise<void>;
@@ -142,7 +143,7 @@ function closeDelete () {
       <v-toolbar
         flat
       >
-        <v-toolbar-title>mrrrp</v-toolbar-title>
+        <v-toolbar-title>{{ props.title }}</v-toolbar-title>
         <v-spacer/>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ props }">

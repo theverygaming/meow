@@ -57,6 +57,7 @@ async function do_delete(id: string) {
 
 <template>
   <Crud
+    title="brainlog"
     :do_create="do_create"
     :do_read="do_read"
     :do_update="do_update"
