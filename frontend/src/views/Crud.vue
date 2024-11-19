@@ -1,24 +1,8 @@
 <script setup>
 // vue.js TS does not support generics in props and tbh i just fucking gave up on using TS here
-//import type { Ref } from 'vue';
 import { ref, nextTick, computed } from 'vue';
 
 import ISODateTimePicker from '../components/ISODateTimePicker.vue';
-
-/*interface FieldDefinition {
-  displayName: string;
-  key: string;
-  type: string;
-  attrs?: object;
-};
-
-interface CrudOperations<T extends object = object, T2 extends T = T> {
-  do_create: (values: T) => Promise<void>;
-  do_read: (page: number, items_per_page: number) => Promise<T2[]>;
-  do_update: (id: string, values: T) => Promise<void>;
-  do_delete: (id: string) => Promise<void>;
-};
-*/
 
 const props = defineProps({
   title: String,
