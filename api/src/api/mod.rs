@@ -18,7 +18,7 @@ pub fn rocket() -> _ {
         std::env::var("DATABASE_URL").expect("DATABASE_URL must be set"),
     ));
 
-    rocket::custom(figment)
+    let mut r = rocket::custom(figment)
         .attach(DbConnection::fairing())
         .attach(rocket::fairing::AdHoc::on_liftoff("Run migrations", |rocket| {
             Box::pin(async move {
@@ -29,6 +29,14 @@ pub fn rocket() -> _ {
                     c.run_pending_migrations(DB_MIGRATIONS).unwrap();
                 }).await;
             })
-        }))
-        .mount("/", routes())
+        }));
+    r = r.mount("/", routes());
+    match std::env::var("STATIC_DIR") {
+        Ok(var) => {
+            println!("Serving static files from {}", var);
+            r = r.mount("/", rocket::fs::FileServer::from(var).rank(100));
+        },
+        Err(_) => {},
+    };
+    r
 }
