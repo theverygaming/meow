@@ -30,10 +30,15 @@ const headers = computed(() => {
       align: i == 0 ? "start" : "end",
     });
   }
-  x.push({ title: 'Actions', key: 'actions', align: 'end' });
+  x.push({
+    title: "Actions",
+    key: "actions",
+    sortable: false,
+    align: "end",
+  });
   return x;
 });
-const search = ref('');
+const search = ref("");
 const serverItems = ref([]);
 const totalItems = ref(0);
 const loading = ref(true);
