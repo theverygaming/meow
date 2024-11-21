@@ -14,3 +14,8 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_PASSWORD=meow
       - POSTGRES_USER=meow
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+    restart: always
+volumes:
+  postgresdata:
