@@ -1,5 +1,10 @@
 # meow
 
+Env init:
+```
+echo "AUTH_API_KEY=$(openssl rand -hex 64)" > web_secrets.env
+```
+
 Run:
 ```
 docker compose up -d

@@ -5,6 +5,7 @@ services:
       - postgres
     environment:
     - DATABASE_URL=postgres://meow:meow@postgres/postgres
+    env_file: "web_secrets.env"
     ports:
       - "8000:8000"
     restart: always
