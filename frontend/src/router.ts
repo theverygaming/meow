@@ -12,8 +12,9 @@ const routes = [
     path: "/",
     component: Page,
     children: [
-      { path: "/", component: TestView },
-      { path: "/test", component: TestView2 },
+      { path: "/", redirect: "/test" },
+      { path: "/test", component: TestView },
+      { path: "/test2", component: TestView2 },
       { path: "/brainlog", component: Brainlog },
     ], 
   },
