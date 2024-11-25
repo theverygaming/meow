@@ -10,21 +10,6 @@ const drawer = ref(false);
   </header>
 
   <main>
-    <v-app>
-      <v-app-bar :elevation="2">
-        <template v-slot:prepend>
-          <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
-        </template>
-        <v-app-bar-title>Meow</v-app-bar-title>
-      </v-app-bar>
-      <v-navigation-drawer v-model="drawer">
-        <v-list-item link to="/" title="Silly" subtitle="test"/>
-        <v-list-item link to="/test" title="Silly2" subtitle="test2"/>
-        <v-list-item link to="/brainlog" title="Brainlog" subtitle="Log for thoughts n stuff"/>
-      </v-navigation-drawer>
-      <v-main>
-        <RouterView />
-      </v-main>
-    </v-app>
+    <RouterView />
   </main>
 </template>
