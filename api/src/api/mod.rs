@@ -1,4 +1,5 @@
 pub mod brainlog;
+pub mod apikey;
 
 fn routes() -> Vec<rocket::Route> {
     let mut routes = Vec::new();

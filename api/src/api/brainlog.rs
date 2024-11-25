@@ -1,11 +1,12 @@
 use rocket::serde::json::{json, Json, Value};
 use crate::db::DbConnection;
 use crate::db::models::brainlog::{BrainlogEntry, NewBrainlogEntry};
+use crate::api::apikey::ApiKey;
 
 use diesel::prelude::*;
 
 #[rocket::post("/api/brainlog/create", format = "json", data = "<data>")]
-async fn log_create(conn: DbConnection, data: Json<NewBrainlogEntry>) -> Json<BrainlogEntry> {
+async fn log_create(conn: DbConnection, _key: ApiKey<'_>, data: Json<NewBrainlogEntry>) -> Json<BrainlogEntry> {
     use crate::db::schema::brainlog_entry;
 
     let entry = conn.run(move |c|{
@@ -20,7 +21,7 @@ async fn log_create(conn: DbConnection, data: Json<NewBrainlogEntry>) -> Json<Br
 }
 
 #[rocket::get("/api/brainlog/get?<id>")]
-async fn log_get(conn: DbConnection, id: &str) -> Json<BrainlogEntry> {
+async fn log_get(conn: DbConnection, _key: ApiKey<'_>, id: &str) -> Json<BrainlogEntry> {
     use crate::db::schema::brainlog_entry;
 
     let uuid = uuid::Uuid::parse_str(id).expect("valid UUID");
@@ -36,7 +37,7 @@ async fn log_get(conn: DbConnection, id: &str) -> Json<BrainlogEntry> {
 }
 
 #[rocket::post("/api/brainlog/update?<id>", format = "json", data = "<data>")]
-async fn log_update(conn: DbConnection, id: &str, data: Json<NewBrainlogEntry>) -> Json<BrainlogEntry> {
+async fn log_update(conn: DbConnection, _key: ApiKey<'_>, id: &str, data: Json<NewBrainlogEntry>) -> Json<BrainlogEntry> {
     use crate::db::schema::brainlog_entry;
 
     let uuid = uuid::Uuid::parse_str(id).expect("valid UUID");
@@ -54,7 +55,7 @@ async fn log_update(conn: DbConnection, id: &str, data: Json<NewBrainlogEntry>) 
 }
 
 #[rocket::get("/api/brainlog/delete?<id>")]
-async fn log_delete(conn: DbConnection, id: &str) {
+async fn log_delete(conn: DbConnection, _key: ApiKey<'_>, id: &str) {
     use crate::db::schema::brainlog_entry;
 
     let uuid = uuid::Uuid::parse_str(id).expect("valid UUID");
@@ -68,7 +69,7 @@ async fn log_delete(conn: DbConnection, id: &str) {
 }
 
 #[rocket::get("/api/brainlog/list?<page>&<pagesize>")]
-async fn log_list(conn: DbConnection, page: i64, mut pagesize: i64) -> Value {
+async fn log_list(conn: DbConnection, _key: ApiKey<'_>, page: i64, mut pagesize: i64) -> Value {
     use crate::db::schema::brainlog_entry;
     use diesel::dsl::count_star;
     use crate::db::schema::brainlog_entry::dsl::*;

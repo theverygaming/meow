@@ -17,6 +17,7 @@ frontend:
 ```
 cd frontend
 nix-shell
+npm install
 npm run dev
 ```
 
