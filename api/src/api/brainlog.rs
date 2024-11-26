@@ -5,99 +5,38 @@ use rocket::serde::json::{json, Json, Value};
 
 use diesel::prelude::*;
 
-#[rocket::post("/api/brainlog/create", format = "json", data = "<data>")]
-async fn log_create(
-    conn: DbConnection,
-    _key: ApiKey<'_>,
-    data: Json<NewBrainlogEntry>,
-) -> Json<BrainlogEntry> {
-    use crate::db::schema::brainlog_entry;
+use crate::{crud_create, crud_list, crud_update, crud_delete};
 
-    let entry = conn
-        .run(move |c| {
-            diesel::insert_into(brainlog_entry::table)
-                .values(&*data)
-                .returning(BrainlogEntry::as_returning())
-                .get_result(c)
-                .expect("Error creating")
-        })
-        .await;
+crud_create!(
+    "/api/brainlog/create",
+    log_create,
+    brainlog_entry,
+    NewBrainlogEntry,
+    BrainlogEntry
+);
 
-    Json(entry)
-}
+crud_list!(
+    "/api/brainlog/list?<page>&<pagesize>",
+    log_list,
+    brainlog_entry,
+    BrainlogEntry,
+    brainlog_entry::time.desc()
+);
 
-#[rocket::post("/api/brainlog/update?<id>", format = "json", data = "<data>")]
-async fn log_update(
-    conn: DbConnection,
-    _key: ApiKey<'_>,
-    id: &str,
-    data: Json<NewBrainlogEntry>,
-) -> Json<BrainlogEntry> {
-    use crate::db::schema::brainlog_entry;
+crud_update!(
+    "/api/brainlog/update?<id>",
+    log_update,
+    brainlog_entry,
+    NewBrainlogEntry,
+    BrainlogEntry
+);
 
-    let uuid = uuid::Uuid::parse_str(id).expect("valid UUID");
-
-    let entry = conn
-        .run(move |c| {
-            diesel::update(brainlog_entry::table)
-                .filter(brainlog_entry::id.eq(uuid))
-                .set(&*data)
-                .returning(BrainlogEntry::as_returning())
-                .get_result(c)
-                .expect("Error updating")
-        })
-        .await;
-
-    Json(entry)
-}
-
-#[rocket::get("/api/brainlog/delete?<id>")]
-async fn log_delete(conn: DbConnection, _key: ApiKey<'_>, id: &str) {
-    use crate::db::schema::brainlog_entry;
-
-    let uuid = uuid::Uuid::parse_str(id).expect("valid UUID");
-
-    conn.run(move |c| {
-        diesel::delete(brainlog_entry::table)
-            .filter(brainlog_entry::id.eq(uuid))
-            .execute(c)
-            .expect("Error deleting")
-    })
-    .await;
-}
-
-#[rocket::get("/api/brainlog/list?<page>&<pagesize>")]
-async fn log_list(conn: DbConnection, _key: ApiKey<'_>, page: i64, mut pagesize: i64) -> Value {
-    use crate::db::schema::brainlog_entry;
-    use crate::db::schema::brainlog_entry::dsl::*;
-    use diesel::dsl::count_star;
-
-    let rows: i64 = conn
-        .run(|c| brainlog_entry.select(count_star()).first(c).expect("Issue"))
-        .await;
-
-    if pagesize == -1 {
-        pagesize = rows;
-    }
-
-    let items = conn
-        .run(move |c| {
-            brainlog_entry
-                .limit(pagesize)
-                .offset(page * pagesize)
-                .select(BrainlogEntry::as_select())
-                .order_by(brainlog_entry::time.desc())
-                .load(c)
-                .expect("Issue")
-        })
-        .await;
-
-    json!({
-        "total_items": rows,
-        "items": items,
-    })
-}
+crud_delete!(
+    "/api/brainlog/delete?<id>",
+    log_delete,
+    brainlog_entry
+);
 
 pub fn routes() -> Vec<rocket::Route> {
-    rocket::routes![log_create, log_update, log_delete, log_list]
+    rocket::routes![log_create, log_list, log_update, log_delete]
 }
