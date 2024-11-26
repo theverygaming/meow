@@ -5,7 +5,7 @@ use rocket::serde::json::{json, Json, Value};
 
 use diesel::prelude::*;
 
-use crate::{crud_create, crud_list, crud_update, crud_delete};
+use crate::{crud_create, crud_delete, crud_list, crud_update};
 
 crud_create!(
     "/api/brainlog/create",
@@ -31,11 +31,7 @@ crud_update!(
     BrainlogEntry
 );
 
-crud_delete!(
-    "/api/brainlog/delete?<id>",
-    log_delete,
-    brainlog_entry
-);
+crud_delete!("/api/brainlog/delete?<id>", log_delete, brainlog_entry);
 
 pub fn routes() -> Vec<rocket::Route> {
     rocket::routes![log_create, log_list, log_update, log_delete]

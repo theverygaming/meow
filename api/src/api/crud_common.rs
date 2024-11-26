@@ -58,11 +58,7 @@ macro_rules! crud_update {
 macro_rules! crud_delete {
     ($route:expr, $fn_name:ident, $table:ident) => {
         #[rocket::get($route)]
-        async fn $fn_name(
-            conn: DbConnection,
-            _key: ApiKey<'_>, 
-            id: &str
-        ) -> () {
+        async fn $fn_name(conn: DbConnection, _key: ApiKey<'_>, id: &str) -> () {
             use crate::db::schema::$table;
 
             let uuid = uuid::Uuid::parse_str(id).expect("valid UUID");
