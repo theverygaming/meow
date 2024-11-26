@@ -19,10 +19,6 @@ function getApiKey(): string {
     return api_key;
 }
 
-export async function getType(id: string) {
-    return await getData(`/brainlog/type/get?id=${id}`, getApiKey());
-}
-
 export async function createLog(data: BrainlogObj): Promise<BrainlogObjId> {
     return await postData("/brainlog/create", getApiKey(), data) as BrainlogObjId;
 }

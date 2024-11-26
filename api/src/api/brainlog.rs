@@ -26,24 +26,6 @@ async fn log_create(
     Json(entry)
 }
 
-#[rocket::get("/api/brainlog/get?<id>")]
-async fn log_get(conn: DbConnection, _key: ApiKey<'_>, id: &str) -> Json<BrainlogEntry> {
-    use crate::db::schema::brainlog_entry;
-
-    let uuid = uuid::Uuid::parse_str(id).expect("valid UUID");
-
-    let entry = conn
-        .run(move |c| {
-            brainlog_entry::table
-                .filter(brainlog_entry::id.eq(uuid))
-                .first(c)
-                .expect("Issue")
-        })
-        .await;
-
-    Json(entry)
-}
-
 #[rocket::post("/api/brainlog/update?<id>", format = "json", data = "<data>")]
 async fn log_update(
     conn: DbConnection,
@@ -117,5 +99,5 @@ async fn log_list(conn: DbConnection, _key: ApiKey<'_>, page: i64, mut pagesize:
 }
 
 pub fn routes() -> Vec<rocket::Route> {
-    rocket::routes![log_create, log_get, log_update, log_delete, log_list]
+    rocket::routes![log_create, log_update, log_delete, log_list]
 }
