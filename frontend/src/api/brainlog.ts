@@ -1,4 +1,4 @@
-import { getData, postData } from './api';
+import { getData, postData, putData, deleteData } from './api';
 
 export interface BrainlogObj {
     body: string;
@@ -29,9 +29,9 @@ export async function getLogsList(page: number, pageSize: number): Promise<Brain
 }
 
 export async function updateLog(id: string, data: BrainlogObj) {
-    await postData(`/brainlog/update?id=${id}`, getApiKey(), data);
+    await putData(`/brainlog/${id}`, getApiKey(), data);
 }
 
 export async function deleteLog(id: string) {
-    await getData(`/brainlog/delete?id=${id}`, getApiKey());
+    await deleteData(`/brainlog/${id}`, getApiKey());
 }

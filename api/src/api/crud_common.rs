@@ -69,7 +69,7 @@ macro_rules! crud_list {
 #[macro_export]
 macro_rules! crud_update {
     ($route:expr, $fn_name:ident, $table:ident, $t_input:ty, $t_output:ty) => {
-        #[rocket::post($route, format = "json", data = "<data>")]
+        #[rocket::put($route, format = "json", data = "<data>")]
         async fn $fn_name(
             conn: DbConnection,
             _key: ApiKey<'_>,
@@ -99,7 +99,7 @@ macro_rules! crud_update {
 #[macro_export]
 macro_rules! crud_delete {
     ($route:expr, $fn_name:ident, $table:ident) => {
-        #[rocket::get($route)]
+        #[rocket::delete($route)]
         async fn $fn_name(conn: DbConnection, _key: ApiKey<'_>, id: &str) -> () {
             use crate::db::schema::$table;
 

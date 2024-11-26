@@ -18,14 +18,14 @@ crud_list!(
 );
 
 crud_update!(
-    "/api/quest/update?<id>",
+    "/api/quest/<id>",
     quest_update,
     quest,
     NewQuest,
     Quest
 );
 
-crud_delete!("/api/quest/delete?<id>", quest_delete, quest);
+crud_delete!("/api/quest/<id>", quest_delete, quest);
 
 pub fn routes() -> Vec<rocket::Route> {
     rocket::routes![quest_create, quest_list, quest_update, quest_delete]

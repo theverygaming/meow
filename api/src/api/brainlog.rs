@@ -24,14 +24,14 @@ crud_list!(
 );
 
 crud_update!(
-    "/api/brainlog/update?<id>",
+    "/api/brainlog/<id>",
     log_update,
     brainlog_entry,
     NewBrainlogEntry,
     BrainlogEntry
 );
 
-crud_delete!("/api/brainlog/delete?<id>", log_delete, brainlog_entry);
+crud_delete!("/api/brainlog/<id>", log_delete, brainlog_entry);
 
 pub fn routes() -> Vec<rocket::Route> {
     rocket::routes![log_create, log_list, log_update, log_delete]
