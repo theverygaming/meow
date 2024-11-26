@@ -1,10 +1,12 @@
 pub mod apikey;
 pub mod brainlog;
 pub mod crud_common;
+pub mod quest;
 
 fn routes() -> Vec<rocket::Route> {
     let mut routes = Vec::new();
     routes.append(&mut brainlog::routes());
+    routes.append(&mut quest::routes());
 
     routes
 }
