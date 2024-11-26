@@ -1,7 +1,7 @@
-use diesel::prelude::*;
-use crate::db::schema::{brainlog_entry};
-use rocket::serde::{Serialize, Deserialize};
+use crate::db::schema::brainlog_entry;
 use crate::db::utcdatetime::UTCDateTime;
+use diesel::prelude::*;
+use rocket::serde::{Deserialize, Serialize};
 
 #[derive(Queryable, Selectable, Serialize)]
 #[diesel(table_name = brainlog_entry)]

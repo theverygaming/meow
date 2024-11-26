@@ -1,7 +1,7 @@
-use diesel::prelude::*;
 use crate::db::schema::{quest, quest_item};
-use rocket::serde::{Serialize, Deserialize};
+use diesel::prelude::*;
 use rocket::serde::json::serde_json;
+use rocket::serde::{Deserialize, Serialize};
 
 #[derive(Queryable, Selectable, Serialize)]
 #[diesel(table_name = quest)]

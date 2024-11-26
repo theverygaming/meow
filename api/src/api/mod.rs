@@ -1,5 +1,5 @@
-pub mod brainlog;
 pub mod apikey;
+pub mod brainlog;
 
 fn routes() -> Vec<rocket::Route> {
     let mut routes = Vec::new();
@@ -10,7 +10,8 @@ fn routes() -> Vec<rocket::Route> {
 
 use crate::db::DbConnection;
 
-const DB_MIGRATIONS: diesel_migrations::EmbeddedMigrations = diesel_migrations::embed_migrations!("./migrations");
+const DB_MIGRATIONS: diesel_migrations::EmbeddedMigrations =
+    diesel_migrations::embed_migrations!("./migrations");
 
 #[rocket::launch]
 pub fn rocket() -> _ {
@@ -21,23 +22,27 @@ pub fn rocket() -> _ {
 
     let mut r = rocket::custom(figment)
         .attach(DbConnection::fairing())
-        .attach(rocket::fairing::AdHoc::on_liftoff("Run migrations", |rocket| {
-            Box::pin(async move {
-                use diesel_migrations::{MigrationHarness};
-                let conn = DbConnection::get_one(rocket).await.unwrap();
-                conn.run(move |c|{
-                    println!("running migrations...");
-                    c.run_pending_migrations(DB_MIGRATIONS).unwrap();
-                }).await;
-            })
-        }));
+        .attach(rocket::fairing::AdHoc::on_liftoff(
+            "Run migrations",
+            |rocket| {
+                Box::pin(async move {
+                    use diesel_migrations::MigrationHarness;
+                    let conn = DbConnection::get_one(rocket).await.unwrap();
+                    conn.run(move |c| {
+                        println!("running migrations...");
+                        c.run_pending_migrations(DB_MIGRATIONS).unwrap();
+                    })
+                    .await;
+                })
+            },
+        ));
     r = r.mount("/", routes());
     match std::env::var("STATIC_DIR") {
         Ok(var) => {
             println!("Serving static files from {}", var);
             r = r.mount("/", rocket::fs::FileServer::from(var).rank(100));
-        },
-        Err(_) => {},
+        }
+        Err(_) => {}
     };
     r
 }

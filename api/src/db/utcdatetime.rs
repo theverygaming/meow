@@ -1,6 +1,6 @@
 use rocket::serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-// I have no fucking clue what I'm doing I just consulted ChatGPT about all of this at fucking 4am it's so over 
+// I have no fucking clue what I'm doing I just consulted ChatGPT about all of this at fucking 4am it's so over
 
 #[derive(Debug, Clone, Copy, diesel::AsExpression, diesel::FromSqlRow)]
 #[diesel(sql_type = diesel::sql_types::Timestamp)]
@@ -27,7 +27,10 @@ impl<'de> Deserialize<'de> for UTCDateTime {
 
 impl diesel::deserialize::FromSql<diesel::sql_types::Timestamp, diesel::pg::Pg> for UTCDateTime {
     fn from_sql(bytes: diesel::pg::PgValue<'_>) -> diesel::deserialize::Result<Self> {
-        let naive = <chrono::NaiveDateTime as diesel::deserialize::FromSql<diesel::sql_types::Timestamp, diesel::pg::Pg>>::from_sql(bytes)?;
+        let naive = <chrono::NaiveDateTime as diesel::deserialize::FromSql<
+            diesel::sql_types::Timestamp,
+            diesel::pg::Pg,
+        >>::from_sql(bytes)?;
         Ok(UTCDateTime(naive))
     }
 }
@@ -42,7 +45,13 @@ impl Serialize for UTCDateTime {
 }
 
 impl diesel::serialize::ToSql<diesel::sql_types::Timestamp, diesel::pg::Pg> for UTCDateTime {
-    fn to_sql<'b>(&'b self, out: &mut diesel::serialize::Output<'b, '_, diesel::pg::Pg>) -> diesel::serialize::Result {
-        <chrono::NaiveDateTime as diesel::serialize::ToSql<diesel::sql_types::Timestamp, diesel::pg::Pg>>::to_sql(&self.0, out)
+    fn to_sql<'b>(
+        &'b self,
+        out: &mut diesel::serialize::Output<'b, '_, diesel::pg::Pg>,
+    ) -> diesel::serialize::Result {
+        <chrono::NaiveDateTime as diesel::serialize::ToSql<
+            diesel::sql_types::Timestamp,
+            diesel::pg::Pg,
+        >>::to_sql(&self.0, out)
     }
 }
