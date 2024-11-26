@@ -1,4 +1,4 @@
-import { getData, postData, putData, deleteData } from './api';
+import { getApiKey, getData, postData, putData, deleteData } from './api';
 
 export interface BrainlogObj {
     body: string;
@@ -8,15 +8,6 @@ export interface BrainlogObj {
 
 export interface BrainlogObjId extends BrainlogObj {
     id: string;
-}
-
-function getApiKey(): string {
-    const api_key = localStorage.getItem("API_KEY");
-    console.log(api_key);
-    if (!api_key) {
-        throw new Error("missing API key");
-    }
-    return api_key;
 }
 
 export async function createLog(data: BrainlogObj): Promise<BrainlogObjId> {

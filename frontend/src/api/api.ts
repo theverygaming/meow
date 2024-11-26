@@ -3,6 +3,16 @@ import { ro } from "vuetify/locale";
 const API_URL = "/api";
 const API_TIMEOUT = 5000;
 
+export function getApiKey(): string {
+    const api_key = localStorage.getItem("API_KEY");
+    console.log(api_key);
+    if (!api_key) {
+        throw new Error("missing API key");
+    }
+    return api_key;
+}
+
+
 export async function getData(route: string, api_key: string): Promise<Object> {
     const url = API_URL + route;
     const response = await fetch(
