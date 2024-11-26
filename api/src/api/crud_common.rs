@@ -25,6 +25,48 @@ macro_rules! crud_create {
 }
 
 #[macro_export]
+macro_rules! crud_list {
+    ($route:expr, $fn_name:ident, $table:ident, $t_output:ty, $order_by:expr) => {
+        #[rocket::get($route)]
+        async fn $fn_name(
+            conn: DbConnection,
+            _key: ApiKey<'_>,
+            page: i64,
+            mut pagesize: i64
+        ) -> Value {
+            use crate::db::schema::$table;
+            use crate::db::schema::$table::dsl::*;
+            use diesel::dsl::count_star;
+
+            let rows: i64 = conn
+                .run(|c| $table.select(count_star()).first(c).expect("Issue"))
+                .await;
+
+            if pagesize == -1 {
+                pagesize = rows;
+            }
+
+            let items = conn
+                .run(move |c| {
+                    $table
+                        .limit(pagesize)
+                        .offset(page * pagesize)
+                        .select(<$t_output>::as_select())
+                        .order_by($order_by)
+                        .load(c)
+                        .expect("Issue")
+                })
+                .await;
+
+            json!({
+                "total_items": rows,
+                "items": items,
+            })
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! crud_update {
     ($route:expr, $fn_name:ident, $table:ident, $t_input:ty, $t_output:ty) => {
         #[rocket::post($route, format = "json", data = "<data>")]
@@ -70,48 +112,6 @@ macro_rules! crud_delete {
                     .expect("Error deleting")
             })
             .await;
-        }
-    };
-}
-
-#[macro_export]
-macro_rules! crud_list {
-    ($route:expr, $fn_name:ident, $table:ident, $t_output:ty, $order_by:expr) => {
-        #[rocket::get($route)]
-        async fn $fn_name(
-            conn: DbConnection,
-            _key: ApiKey<'_>,
-            page: i64,
-            mut pagesize: i64
-        ) -> Value {
-            use crate::db::schema::$table;
-            use crate::db::schema::$table::dsl::*;
-            use diesel::dsl::count_star;
-
-            let rows: i64 = conn
-                .run(|c| $table.select(count_star()).first(c).expect("Issue"))
-                .await;
-
-            if pagesize == -1 {
-                pagesize = rows;
-            }
-
-            let items = conn
-                .run(move |c| {
-                    $table
-                        .limit(pagesize)
-                        .offset(page * pagesize)
-                        .select(<$t_output>::as_select())
-                        .order_by($order_by)
-                        .load(c)
-                        .expect("Issue")
-                })
-                .await;
-
-            json!({
-                "total_items": rows,
-                "items": items,
-            })
         }
     };
 }
