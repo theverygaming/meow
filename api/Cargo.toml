@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 rocket = { version = "0.5.1", features = ["json"] }
-diesel = { version = "2.2.4", features = ["postgres", "uuid", "chrono"] }
+diesel = { version = "2.2.4", features = ["postgres", "uuid", "chrono", "serde_json"] }
 rocket_sync_db_pools = { version = "0.1.0", features = ["diesel_postgres_pool"] }
 serde = { version = "1.0.214", features = ["derive"] }
 chrono = "0.4.38"
