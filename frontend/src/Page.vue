@@ -16,6 +16,7 @@ const drawer = ref(false);
       <v-list-item link to="/test" title="Silly" subtitle="test"/>
       <v-list-item link to="/test2" title="Silly2" subtitle="test2"/>
       <v-list-item link to="/brainlog" title="Brainlog" subtitle="Log for thoughts n stuff"/>
+      <v-list-item link to="/quest" title="Quests" subtitle="Quests"/>
     </v-navigation-drawer>
     <v-main>
       <RouterView />
