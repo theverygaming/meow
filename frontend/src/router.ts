@@ -7,6 +7,7 @@ import TestView from "./views/TestView.vue";
 import TestView2 from "./views/TestView2.vue";
 import Brainlog from "./views/Brainlog.vue";
 import Quest from "./views/Quest.vue";
+import QuestItem from "./views/QuestItem.vue";
 
 const routes = [
   { 
@@ -18,6 +19,7 @@ const routes = [
       { path: "/test2", component: TestView2 },
       { path: "/brainlog", component: Brainlog },
       { path: "/quest", component: Quest },
+      { path: "/quest/items", component: QuestItem },
     ], 
   },
   { 
