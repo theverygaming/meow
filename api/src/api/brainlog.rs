@@ -16,7 +16,7 @@ crud_create!(
 );
 
 crud_list!(
-    "/api/brainlog/list?<page>&<pagesize>",
+    "/api/brainlog?<page>&<pagesize>",
     log_list,
     brainlog_entry,
     BrainlogEntry,

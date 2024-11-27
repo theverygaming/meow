@@ -13,7 +13,7 @@ export async function createQuest(data: QuestObj): Promise<QuestObjId> {
 }
 
 export async function getQuestsList(page: number, pageSize: number): Promise<QuestObjId[]> {
-    let data = await getData(`/quest/list?page=${page-1}&pagesize=${pageSize}`, getApiKey()) as QuestObjId[];
+    let data = await getData(`/quest?page=${page-1}&pagesize=${pageSize}`, getApiKey()) as QuestObjId[];
     return data;
 }
 

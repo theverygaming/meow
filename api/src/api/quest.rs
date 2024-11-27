@@ -10,7 +10,7 @@ use crate::{crud_create, crud_delete, crud_list, crud_update};
 crud_create!("/api/quest/create", quest_create, quest, NewQuest, Quest);
 
 crud_list!(
-    "/api/quest/list?<page>&<pagesize>",
+    "/api/quest?<page>&<pagesize>",
     quest_list,
     quest,
     Quest,
@@ -30,7 +30,7 @@ crud_create!(
 );
 
 crud_list!(
-    "/api/quest/items/list?<page>&<pagesize>",
+    "/api/quest/items?<page>&<pagesize>",
     quest_item_list,
     quest_item,
     QuestItem,
@@ -45,7 +45,7 @@ crud_update!(
     QuestItem
 );
 
-crud_delete!("/api/quest/items/<id>", quest_item_delete, quest);
+crud_delete!("/api/quest/items/<id>", quest_item_delete, quest_item);
 
 pub fn routes() -> Vec<rocket::Route> {
     rocket::routes![

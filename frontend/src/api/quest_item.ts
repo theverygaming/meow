@@ -16,7 +16,7 @@ export async function createQuestItem(data: QuestItemObj): Promise<QuestItemObjI
 }
 
 export async function getQuestItemsList(page: number, pageSize: number): Promise<QuestItemObjId[]> {
-    let data = await getData(`/quest/items/list?page=${page-1}&pagesize=${pageSize}`, getApiKey()) as QuestItemObjId[];
+    let data = await getData(`/quest/items?page=${page-1}&pagesize=${pageSize}`, getApiKey()) as QuestItemObjId[];
     return data;
 }
 
