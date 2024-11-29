@@ -52,24 +52,13 @@ function loadItems ({ page, itemsPerPage, sortBy }) {
 // Create & Edit logic
 
 const dialog = ref(false);
-const defaultItem = ref({
-    body: "",
-    log_type: "",
-    time: "",
-});
-const editedItem = ref({
-    name: "",
-    "type": "",
-    body: "",
-    log_type: "",
-    time: "",
-});
+const editedItem = ref({});
 const editedId = ref(-1);
 
 function close () {
     dialog.value = false;
     nextTick(() => {
-      editedItem.value = Object.assign({}, defaultItem.value);
+      editedItem.value = Object.assign({}, {});
       editedId.value = -1;
     });
 }
@@ -87,9 +76,16 @@ function save () {
     close();
 }
 
+function getEditItem(item) {
+  if (Object.hasOwn(item, "__item_edit_values")) {
+    return item["__item_edit_values"];
+  }
+  return item;
+}
+
 function editItem (item) {
     editedId.value = item.id;
-    editedItem.value = Object.assign({}, item);
+    editedItem.value = Object.assign({}, getEditItem(item));
     dialog.value = true;
 }
 
@@ -97,7 +93,7 @@ function editItem (item) {
 const dialogDelete = ref(false);
 function deleteItem (item) {
     editedId.value = item.id;
-    editedItem.value = Object.assign({}, item);
+    editedItem.value = Object.assign({}, getEditItem(item));
     dialogDelete.value = true;
 }
 
@@ -162,6 +158,12 @@ function closeDelete () {
                       v-if="field.type == 'select'"
                       :label="field.displayName"
                       :items="field.attrs.items"
+                      v-model="editedItem[field.key]"
+                    ></v-select>
+                    <v-select
+                      v-if="field.type == 'relationalmany2one'"
+                      :label="field.displayName"
+                      :items="field.attrs.getAllItems()"
                       v-model="editedItem[field.key]"
                     ></v-select>
                   </v-col>

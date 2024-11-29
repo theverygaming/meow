@@ -1,7 +1,7 @@
 use crate::api::apikey::ApiKey;
 use crate::db::models::brainlog::{BrainlogEntry, NewBrainlogEntry};
 use crate::db::DbConnection;
-use rocket::serde::json::{json, Json, Value};
+use rocket::serde::json::{json, Json, Value, serde_json};
 
 use diesel::prelude::*;
 
@@ -16,7 +16,7 @@ crud_create!(
 );
 
 crud_list!(
-    "/api/brainlog?<page>&<pagesize>",
+    "/api/brainlog?<page>&<pagesize>&<search>",
     log_list,
     brainlog_entry,
     BrainlogEntry,

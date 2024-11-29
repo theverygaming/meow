@@ -32,29 +32,88 @@ macro_rules! crud_list {
             conn: DbConnection,
             _key: ApiKey<'_>,
             page: i64,
-            mut pagesize: i64
+            mut pagesize: i64,
+            search: Option<&str>,
         ) -> Value {
             use crate::db::schema::$table;
             use crate::db::schema::$table::dsl::*;
             use diesel::dsl::count_star;
 
-            let rows: i64 = conn
-                .run(|c| $table.select(count_star()).first(c).expect("Issue"))
-                .await;
+            let search_data = match search {
+                Some(x) => serde_json::from_str(x).unwrap(),
+                None => json!([]),
+            };
 
-            if pagesize == -1 {
-                pagesize = rows;
+            type TableFilter = Box<dyn BoxableExpression<$table::table, diesel::pg::Pg, SqlType = diesel::sql_types::Bool>>;
+
+            fn create_filter(search_data: &Value) -> TableFilter {
+                let mut filters: Vec<TableFilter> = Vec::new();
+
+                // JSON structure: [["id", "=", "abcdef"], ["name", "=", "meow"]]
+                if let Some(operations) = search_data.as_array() {
+                    for op in operations {
+                        let op_items = match op.as_array() {
+                            Some(items) if items.len() == 3 => items,
+                            _ => continue, // invalid? skip
+                        };
+
+                        let (field, operator, value) = match (
+                            op_items[0].as_str(),
+                            op_items[1].as_str(),
+                            op_items[2].as_str(),
+                        ) {
+                            (Some(field), Some(operator), Some(value)) => (field, operator, value),
+                            _ => continue, // invalid format? skip
+                        };
+
+                        let filter = match (field, operator) {
+                            ("id", "=") => {
+                                if let Ok(uuid) = uuid::Uuid::parse_str(value) {
+                                    Some(Box::new($table::id.eq(uuid)))
+                                } else {
+                                    None
+                                }
+                            }
+                            //("name", "=") => Some(Box::new($table::name.eq(value))),
+                            //("name", "!=") => Some(Box::new($table::name.ne(value))),
+                            //("name", "like") => Some(Box::new($table::name.like(value))),
+                            _ => None, // ignore unsupported
+                        };
+
+                        if let Some(f) = filter {
+                            filters.push(f);
+                        }
+                    }
+                }
+
+                filters
+                    .into_iter()
+                    .reduce(|acc, f| {
+                        Box::new(acc.and(f))
+                    })
+                    .unwrap_or_else(|| Box::new(diesel::dsl::sql("1 = 1"))) // Silly, but allows reducing the amount of code needed
             }
 
-            let items = conn
+            let (rows, items) = conn
                 .run(move |c| {
-                    $table
+                    let rows = $table
+                        .filter(create_filter(&search_data))
+                        .select(count_star()).first(c).expect("Issue");
+
+                    if pagesize == -1 {
+                        pagesize = rows;
+                    }
+
+                    let items = $table
+                        .filter(create_filter(&search_data))
                         .limit(pagesize)
                         .offset(page * pagesize)
                         .select(<$t_output>::as_select())
                         .order_by($order_by)
                         .load(c)
-                        .expect("Issue")
+                        .expect("Issue");
+
+                    (rows, items)
                 })
                 .await;
 

@@ -1,7 +1,7 @@
 use crate::api::apikey::ApiKey;
 use crate::db::models::quest::{NewQuest, NewQuestItem, Quest, QuestItem};
 use crate::db::DbConnection;
-use rocket::serde::json::{json, Json, Value};
+use rocket::serde::json::{json, Json, Value, serde_json};
 
 use diesel::prelude::*;
 
@@ -10,7 +10,7 @@ use crate::{crud_create, crud_delete, crud_list, crud_update};
 crud_create!("/api/quest/create", quest_create, quest, NewQuest, Quest);
 
 crud_list!(
-    "/api/quest?<page>&<pagesize>",
+    "/api/quest?<page>&<pagesize>&<search>",
     quest_list,
     quest,
     Quest,
@@ -30,7 +30,7 @@ crud_create!(
 );
 
 crud_list!(
-    "/api/quest/items?<page>&<pagesize>",
+    "/api/quest/items?<page>&<pagesize>&<search>",
     quest_item_list,
     quest_item,
     QuestItem,
