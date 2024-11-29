@@ -20,11 +20,11 @@ export async function createLog(data: BrainlogObj): Promise<BrainlogObjId> {
 }
 
 export async function getLogsList(page: number, pageSize: number): Promise<BrainlogObjList> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     params.append("page", (page-1).toString());
     params.append("pagesize", (pageSize).toString());
 
-    let data = await getData(`/brainlog?${params.toString()}`, getApiKey()) as BrainlogObjList;
+    const data = await getData(`/brainlog?${params.toString()}`, getApiKey()) as BrainlogObjList;
     return data;
 }
 

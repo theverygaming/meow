@@ -18,12 +18,12 @@ export async function createQuest(data: QuestObj): Promise<QuestObjId> {
 }
 
 export async function getQuestsList(page: number, pageSize: number, search: string[][]=[]): Promise<QuestObjList> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     params.append("page", (page-1).toString());
     params.append("pagesize", (pageSize).toString());
     params.append("search", JSON.stringify(search));
 
-    let data = await getData(`/quest?${params.toString()}`, getApiKey()) as QuestObjList;
+    const data = await getData(`/quest?${params.toString()}`, getApiKey()) as QuestObjList;
     return data;
 }
 

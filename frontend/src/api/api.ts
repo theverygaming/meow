@@ -1,5 +1,3 @@
-import { ro } from "vuetify/locale";
-
 const API_URL = "/api";
 const API_TIMEOUT = 5000;
 
@@ -13,7 +11,7 @@ export function getApiKey(): string {
 }
 
 
-export async function getData(route: string, api_key: string): Promise<Object> {
+export async function getData(route: string, api_key: string): Promise<object> {
     const url = API_URL + route;
     const response = await fetch(
         url,
@@ -36,7 +34,7 @@ export async function getData(route: string, api_key: string): Promise<Object> {
     }
 }
 
-async function updatePostCore(route: string, api_key: string, data: Object, method: string): Promise<Object> {
+async function updatePostCore(route: string, api_key: string, data: object, method: string): Promise<object> {
     const url = API_URL + route;
     const request = new Request(url, {
         method: method,
@@ -62,15 +60,15 @@ async function updatePostCore(route: string, api_key: string, data: Object, meth
 }
 
 
-export async function postData(route: string, api_key: string, data: Object): Promise<Object> {
+export async function postData(route: string, api_key: string, data: object): Promise<object> {
     return await updatePostCore(route, api_key,data, "POST");
 }
 
-export async function putData(route: string, api_key: string, data: Object): Promise<Object> {
+export async function putData(route: string, api_key: string, data: object): Promise<object> {
     return await updatePostCore(route, api_key,data, "PUT");
 }
 
-export async function deleteData(route: string, api_key: string): Promise<Object> {
+export async function deleteData(route: string, api_key: string): Promise<object> {
     const url = API_URL + route;
     const request = new Request(url, {
         method: "DELETE",

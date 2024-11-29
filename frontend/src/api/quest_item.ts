@@ -21,11 +21,11 @@ export async function createQuestItem(data: QuestItemObj): Promise<QuestItemObjI
 }
 
 export async function getQuestItemsList(page: number, pageSize: number): Promise<QuestItemObjList> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     params.append("page", (page-1).toString());
     params.append("pagesize", (pageSize).toString());
 
-    let data = await getData(`/quest/items?${params.toString()}`, getApiKey()) as QuestItemObjList;
+    const data = await getData(`/quest/items?${params.toString()}`, getApiKey()) as QuestItemObjList;
     return data;
 }
 

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-// @ts-ignore
-import Crud from './Crud.vue';
+// @ts-expect-error Crud.vue is JS
+import Crud from './CrudView.vue';
 
 import { getQuestsList, createQuest, updateQuest, deleteQuest } from '../api/quest';
-import type { QuestObj, QuestObjId, QuestObjList } from '../api/quest';
+import type { QuestObj, QuestObjList } from '../api/quest';
 
 const fields = ref([
   {

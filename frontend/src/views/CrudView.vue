@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/block-lang -->
 <script setup>
 // vue.js TS does not support generics in props and tbh i just fucking gave up on using TS here
 import { ref, nextTick, computed } from 'vue';
@@ -12,7 +13,7 @@ const props = defineProps({
 
 const itemsPerPage = ref(5);
 const headers = computed(() => {
-  let x = [];
+  const x = [];
   for (const [i, field] of props.fields.entries()) {
     x.push({
       title: field.displayName,

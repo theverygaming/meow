@@ -1,30 +1,30 @@
 import { createWebHistory, createRouter } from "vue-router";
 
-import Page from "./Page.vue";
-import Login from "./Login.vue";
+import MainPage from "./MainPage.vue";
+import LoginView from "./LoginView.vue";
 
 import TestView from "./views/TestView.vue";
 import TestView2 from "./views/TestView2.vue";
-import Brainlog from "./views/Brainlog.vue";
-import Quest from "./views/Quest.vue";
-import QuestItem from "./views/QuestItem.vue";
+import BrainlogView from "./views/BrainlogView.vue";
+import QuestView from "./views/QuestView.vue";
+import QuestItemView from "./views/QuestItemView.vue";
 
 const routes = [
   { 
     path: "/",
-    component: Page,
+    component: MainPage,
     children: [
       { path: "/", redirect: "/test" },
       { path: "/test", component: TestView },
       { path: "/test2", component: TestView2 },
-      { path: "/brainlog", component: Brainlog },
-      { path: "/quest", component: Quest },
-      { path: "/quest/items", component: QuestItem },
+      { path: "/brainlog", component: BrainlogView },
+      { path: "/quest", component: QuestView },
+      { path: "/quest/items", component: QuestItemView },
     ], 
   },
   { 
     path: "/login",
-    component: Login,
+    component: LoginView,
   },
 ];
 

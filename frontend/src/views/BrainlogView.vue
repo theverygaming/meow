@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-// @ts-ignore
-import Crud from './Crud.vue';
+// @ts-expect-error Crud.vue is JS
+import Crud from './CrudView.vue';
 
 import { getLogsList, createLog, updateLog, deleteLog } from '../api/brainlog';
-import type { BrainlogObj, BrainlogObjId, BrainlogObjList } from '../api/brainlog';
+import type { BrainlogObj, BrainlogObjList } from '../api/brainlog';
 
 const fields = ref([
   {

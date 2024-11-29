@@ -4,8 +4,8 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-let username = ref("");
-let password = ref("");
+const username = ref("");
+const password = ref("");
 
 async function do_login() {
   localStorage.setItem("API_KEY", password.value);

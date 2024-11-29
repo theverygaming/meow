@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 
-// @ts-ignore
-import Crud from './Crud.vue';
+// @ts-expect-error Crud.vue is JS
+import Crud from './CrudView.vue';
 
 import { getQuestItemsList, createQuestItem, updateQuestItem, deleteQuestItem } from '../api/quest_item';
-import type { QuestItemObj, QuestItemObjId, QuestItemObjList } from '../api/quest_item';
+import type { QuestItemObj, QuestItemObjList } from '../api/quest_item';
 import { getQuestsList } from '../api/quest';
 
 const fields = ref([
@@ -15,7 +15,7 @@ const fields = ref([
     "type": "relationalmany2one",
     "attrs": {
       "getAllItems": function() {
-        let data: { title: string; value: string; }[] = reactive([]);
+        const data: { title: string; value: string; }[] = reactive([]);
         getQuestsList(1, -1).then((r) => {
           for (const item of r.items) {
             data.push({title: item.name, value: item.id});
@@ -47,11 +47,11 @@ const operations = {
     await createQuestItem(values);
   },
   do_read: async (page: number, items_per_page: number): Promise<QuestItemObjList> => {
-    let data = await getQuestItemsList(page, items_per_page);
+    const data = await getQuestItemsList(page, items_per_page);
     for (let i = 0; i < data.items.length; i++) {
-      // @ts-ignore
+      // @ts-expect-error me skill issue
       data.items[i]["__item_edit_values"] = JSON.parse(JSON.stringify(data.items[i])); // deep copy
-      let quest_search = await getQuestsList(1, 1, [["id", "=", data.items[i]["quest_id"]]]);
+      const quest_search = await getQuestsList(1, 1, [["id", "=", data.items[i]["quest_id"]]]);
       if (quest_search.items.length != 0) {
         data.items[i]["quest_id"] = quest_search.items[0].name;
       } else {
