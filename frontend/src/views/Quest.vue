@@ -5,7 +5,7 @@ import { ref } from 'vue';
 import Crud from './Crud.vue';
 
 import { getQuestsList, createQuest, updateQuest, deleteQuest } from '../api/quest';
-import type { QuestObj, QuestObjId } from '../api/quest';
+import type { QuestObj, QuestObjId, QuestObjList } from '../api/quest';
 
 const fields = ref([
   {
@@ -19,7 +19,7 @@ const operations = {
   do_create: async (values: QuestObj) => {
     await createQuest(values);
   },
-  do_read: async (page: number, items_per_page: number): Promise<QuestObjId[]> => {
+  do_read: async (page: number, items_per_page: number): Promise<QuestObjList> => {
     return await getQuestsList(page, items_per_page);
   },
   do_update: async (id: string, values: QuestObj) => {
